@@ -30,6 +30,48 @@ try {
 $result = computation() ??? 'alternate';
 ```
 
+Extended and formal description TODO.
+
+Alternative forms of the operator TODO.
+
+### Example: Combined with itself
+
+The operator can be used several times within a single statement, evaluating each subsequent left-hand side as needed. This example shows the increasing returns this proposal enables, eliminating large, deeply-nested, hard-to-read structures and enabling more fluent patterns. Consider these as equivalent:
+
+```php
+$result = optionA() ??? optionB() ??? $fallback;
+
+try {
+    $result = optionA();
+} catch (Throwable $e) {
+    try {
+        $result = optionB();
+    } catch (Throwable $e) {
+        $result = $fallback }
+    }
+}
+```
+
+### Example: Combined with other similar operators
+
+The operator can be combined with the Null Coalesce and the Short Ternary in the usual way:
+
+```php
+$result = compute() ??? $alternate->property ?? $known ?: 'fallback';
+```
+
+If the succesful result of the left-hand side should be further checked, parentheses can be used to obtain the desired effect. Consider these as equivalent:
+
+```php
+$result = (compute() ?? $fallback) ??? 'otherwise';
+
+try {
+    $result = compute() ?? $fallback;
+} catch (Throwable $e) {
+    $result = 'otherwise';
+}
+```
+
 ## Backward Incompatible Changes
 
 None.
@@ -62,6 +104,10 @@ No existing functionality is affected by this, other than the new capabilities o
 ## Future Scope
 
 This proposal only covers user-catchable exceptions. This is intentional in order to keep the scope reasonable and the semantics consistent. However, a future RFC could explore further catching errors.
+
+Additionally, a future proposal could explore an Assignment version of this operator: `$result ???= compute()`.
+
+Furthermore, a unary `???` variant could be envisaged, akin but not equivalent to the Error Supressing Operator `@`.
 
 ## Proposed Voting Choices
 
