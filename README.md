@@ -61,7 +61,7 @@ No existing functionality is affected by this, other than the new capabilities o
 
 ## Future Scope
 
-TODO.
+This proposal only covers user-catchable exceptions. This is intentional in order to keep the scope reasonable and the semantics consistent. However, a future RFC could explore further catching errors.
 
 ## Proposed Voting Choices
 
