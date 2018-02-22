@@ -36,7 +36,9 @@ Alternative forms of the operator TODO.
 
 ### Example: Combined with itself
 
-The operator can be used several times within a single statement, evaluating each subsequent left-hand side as needed. This example shows the increasing returns this proposal enables, eliminating large, deeply-nested, hard-to-read structures and enabling more fluent patterns. Consider these as equivalent:
+The operator can be used several times within a single statement, evaluating each subsequent left-hand side as needed.
+This example shows the increasing returns this proposal enables, eliminating large, deeply-nested, hard-to-read structures and enabling more fluent patterns.
+Consider these as equivalent:
 
 ```php
 $result = optionA() ??? optionB() ??? $fallback;
@@ -60,7 +62,8 @@ The operator can be combined with the Null Coalesce and the Short Ternary in the
 $result = compute() ??? $alternate->property ?? $known ?: 'fallback';
 ```
 
-If the succesful result of the left-hand side should be further checked, parentheses can be used to obtain the desired effect. Consider these as equivalent:
+If the succesful result of the left-hand side should be further checked, parentheses can be used to obtain the desired effect.
+Consider these as equivalent:
 
 ```php
 $result = (compute() ?? $fallback) ??? 'otherwise';
@@ -103,7 +106,9 @@ No existing functionality is affected by this, other than the new capabilities o
 
 ## Future Scope
 
-This proposal only covers user-catchable exceptions. This is intentional in order to keep the scope reasonable and the semantics consistent. However, a future RFC could explore further catching errors.
+This proposal only covers user-catchable exceptions.
+This is intentional in order to keep the scope reasonable and the semantics consistent.
+However, a future RFC could explore further catching errors.
 
 Additionally, a future proposal could explore an Assignment version of this operator: `$result ???= compute()`.
 
@@ -119,4 +124,25 @@ TODO.
 
 ## References
 
-TODO. Rust `unwrap_or` and similar.
+[Rust](https://rust-lang.org) doesn't have exceptions, but its `Result` type has the [`unwrap_or`](https://doc.rust-lang.org/std/result/enum.Result.html#method.unwrap_or) family of methods, which behave similarly to this operator:
+
+```rust
+let result = compute().unwrap_or("fallback");
+let another = compute().unwrap_or_else(|| fallback());
+```
+
+Ruby is an expression-oriented language, which makes the kind of patterns this operator enables also fairly common:
+
+```ruby
+result = begin
+    compute
+end || 'fallback'
+```
+
+It also supports the Assignment variant mentioned in **Future Work**:
+
+```ruby
+result ||= begin
+    compute
+end
+```
