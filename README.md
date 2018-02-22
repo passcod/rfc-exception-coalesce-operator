@@ -1,13 +1,10 @@
 # PHP RFC: Exception Coalesce Operator
 
-<ul>
-<li>Version: 0.1</li>
-<li>Date: 2018-04-01</li>
-<li>Author: Félix Saparelli <a href="mailto:felix@passcod.name">felix@passcod.name</a></li>
-<li>Status: <abbr title="This is an April Fools' RFC">Unofficial</abbr></li>
-<li>First published at: <a href="https://github.com/passcod/rfc-exception-coalesce-operator">https://github.com/passcod/rfc-exception-coalesce-operator</a>
-</li>
-</ul>
+- Version: 0.1
+- Date: 2018-04-01
+- Author: Félix Saparelli <felix@passcod.name>
+- Status: _[Unofficial](#unofficial)_
+- First published at: https://github.com/passcod/rfc-exception-coalesce-operator
 
 ## Introduction
 
@@ -149,3 +146,7 @@ result ||= begin
     compute
 end
 ```
+
+---
+
+<sub><a name="unofficial">Yes, this is an April Fools' RFC. However, while the <code>???</code> operator choice is not serious, I am quite excited about this Exception Coalesce Operator, whatever actual form it may take! If there is interest from PHP core about it, I'd be happy to go through the proper RFC process for it.</a></sub>
