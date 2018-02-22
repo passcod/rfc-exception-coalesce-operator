@@ -1,10 +1,13 @@
 # PHP RFC: Exception Coalesce Operator
 
-- Version: 0.1
-- Date: 2018-04-01
-- Author: Félix Saparelli <felix@passcod.name>
-- Status: Unofficial
-- First published at: https://github.com/passcod/rfc-exception-coalesce-operator
+<ul>
+<li>Version: 0.1</li>
+<li>Date: 2018-04-01</li>
+<li>Author: Félix Saparelli <a href="mailto:felix@passcod.name">felix@passcod.name</a></li>
+<li>Status: <abbr title="This is an April Fools' RFC">Unofficial</abbr></li>
+<li>First published at: <a href="https://github.com/passcod/rfc-exception-coalesce-operator">https://github.com/passcod/rfc-exception-coalesce-operator</a>
+</li>
+</ul>
 
 ## Introduction
 
