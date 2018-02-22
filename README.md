@@ -34,6 +34,18 @@ Extended and formal description TODO.
 
 Alternative forms of the operator TODO.
 
+### Why not use `@`?
+
+The Error Supressing Operator could be used to approximate the behaviour of the proposed `???` operator:
+
+```php
+$result = (@compute()) ?? 'fallback';
+```
+
+However, the `@` operator is too broad in its effects, unclear in some cases, and overloads Null when it is used.
+
+- Too broad: it does not only supress exceptions, but all errors,
+
 ### Example: Combined with itself
 
 The operator can be used several times within a single statement, evaluating each subsequent left-hand side as needed.
