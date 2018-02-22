@@ -10,7 +10,7 @@
 
 Sometimes, it is desirable to assign the result of a computation to a variable, or an alternate value if the computation fails.
 If the computation in question outputs a falsy value, the Ternary Operator `?:` or its short syntax can be used.
-If the computation returns `null`, the Null Coalesce Operator `?:` can also be used, or even preferred in cases where falsy values should be considered valid.
+If the computation returns `null`, the Null Coalesce Operator `??` can also be used, or even preferred in cases where falsy values should be considered valid.
 But when the computation throws an exception, only the verbose `try` block is available.
 
 This RFC introduces the Exception Coalesce Operator `???`, which evaluates and returns its left-hand side unless an exception is thrown in the course of the evaluation, and returns its right-hand side in that case.
