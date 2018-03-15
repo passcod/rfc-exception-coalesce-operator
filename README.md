@@ -186,6 +186,7 @@ index 95d93903de..567e3955a1 100644
 +			zend_ast_export("try { return ", expr_ast, "; } catch(\\Throwable $e) {}")));
 +
 +	ast->child[0] = hack;
++	zend_ast_destroy(expr_ast);
 +
 +	zend_compile_coalesce(result, ast);
 +}
@@ -239,11 +240,10 @@ index 091d7f61e2..c0a0cece43 100644
 </details>
 
 - Makes `???` also default on `null` values, like `??`;
-- Has a memory leak because I can't C;
 - Is available here: [passcod/php-src](https://github.com/passcod/php-src), branch `exception-coalesce`;
-- Has some tests (which would pass were it not for the leak).
+- Has some tests.
 
-Apart from these issues, it can be used effectively to test this proposal.
+Apart from this limitation, it can be used effectively to test this proposal.
 
 ## References
 
