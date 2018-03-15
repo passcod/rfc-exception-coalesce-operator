@@ -104,7 +104,7 @@ None.
 None.
 
 ### To Opcache
-TODO.
+Unsure.
 
 ### New Constants
 None.
@@ -132,7 +132,118 @@ As this is a language change, a 2/3 majority is required.
 
 ## Patches and Tests
 
-TODO.
+<details>
+    <summary>Here is a hacky (very nasty) partial implementation:</summary>
+
+```diff
+diff --git a/Zend/zend_ast.c b/Zend/zend_ast.c
+index c0fdf48cba..e961320747 100644
+--- a/Zend/zend_ast.c
++++ b/Zend/zend_ast.c
+@@ -573,6 +573,7 @@ ZEND_API void zend_ast_apply(zend_ast *ast, zend_ast_apply_func fn) {
+  *   90     right           = += -= *= /= .= %= &= |= ^= <<= >>= **=
+  *  100     left            ? :
+  *  110     right           ??
++ *  115     right           ???
+  *  120     left            ||
+  *  130     left            &&
+  *  140     left            |
+@@ -1426,6 +1427,7 @@ simple_list:
+ 		case ZEND_AST_YIELD_FROM:
+ 			PREFIX_OP("yield from ", 85, 86);
+ 		case ZEND_AST_COALESCE: BINARY_OP(" ?? ", 110, 111, 110);
++		case ZEND_AST_EXCEPTION_COALESCE: BINARY_OP(" ??? ", 110, 111, 110);
+ 		case ZEND_AST_STATIC:
+ 			smart_str_appends(str, "static $");
+ 			zend_ast_export_name(str, ast->child[0], 0, indent);
+diff --git a/Zend/zend_ast.h b/Zend/zend_ast.h
+index 08a8ab57f4..af512d6beb 100644
+--- a/Zend/zend_ast.h
++++ b/Zend/zend_ast.h
+@@ -115,6 +115,7 @@ enum _zend_ast_kind {
+ 	ZEND_AST_INSTANCEOF,
+ 	ZEND_AST_YIELD,
+ 	ZEND_AST_COALESCE,
++	ZEND_AST_EXCEPTION_COALESCE,
+ 
+ 	ZEND_AST_STATIC,
+ 	ZEND_AST_WHILE,
+diff --git a/Zend/zend_compile.c b/Zend/zend_compile.c
+index 95d93903de..567e3955a1 100644
+--- a/Zend/zend_compile.c
++++ b/Zend/zend_compile.c
+@@ -7313,6 +7313,21 @@ void zend_compile_coalesce(znode *result, zend_ast *ast) /* {{{ */
+ }
+ /* }}} */
+ 
++void zend_compile_exception_coalesce(znode *result, zend_ast *ast) /* {{{ */
++{
++	zend_ast *expr_ast = ast->child[0];
++	zend_ast *default_ast = ast->child[1];
++
++	zend_ast *hack = zend_ast_create_ex(ZEND_AST_INCLUDE_OR_EVAL, ZEND_EVAL,
++		zend_ast_create_zval_from_str(
++			zend_ast_export("try { return ", expr_ast, "; } catch(\\Throwable $e) {}")));
++
++	ast->child[0] = hack;
++
++	zend_compile_coalesce(result, ast);
++}
++/* }}} */
++
+ void zend_compile_print(znode *result, zend_ast *ast) /* {{{ */
+ {
+ 	zend_op *opline;
+@@ -8266,6 +8281,9 @@ void zend_compile_expr(znode *result, zend_ast *ast) /* {{{ */
+ 		case ZEND_AST_COALESCE:
+ 			zend_compile_coalesce(result, ast);
+ 			return;
++		case ZEND_AST_EXCEPTION_COALESCE:
++			zend_compile_exception_coalesce(result, ast);
++			return;
+ 		case ZEND_AST_PRINT:
+ 			zend_compile_print(result, ast);
+ 			return;
+diff --git a/Zend/zend_language_parser.y b/Zend/zend_language_parser.y
+index 091d7f61e2..c0a0cece43 100644
+--- a/Zend/zend_language_parser.y
++++ b/Zend/zend_language_parser.y
+@@ -64,6 +64,7 @@ static YYSIZE_T zend_yytnamerr(char*, const char*);
+ %left '=' T_PLUS_EQUAL T_MINUS_EQUAL T_MUL_EQUAL T_DIV_EQUAL T_CONCAT_EQUAL T_MOD_EQUAL T_AND_EQUAL T_OR_EQUAL T_XOR_EQUAL T_SL_EQUAL T_SR_EQUAL T_POW_EQUAL
+ %left '?' ':'
+ %right T_COALESCE
++%right T_EXCEPTION_COALESCE
+ %left T_BOOLEAN_OR
+ %left T_BOOLEAN_AND
+ %left '|'
+@@ -219,6 +220,7 @@ static YYSIZE_T zend_yytnamerr(char*, const char*);
+ %token T_NS_SEPARATOR    "\\ (T_NS_SEPARATOR)"
+ %token T_ELLIPSIS        "... (T_ELLIPSIS)"
+ %token T_COALESCE        "?? (T_COALESCE)"
++%token T_EXCEPTION_COALESCE        "??? (T_EXCEPTION_COALESCE)"
+ %token T_POW             "** (T_POW)"
+ %token T_POW_EQUAL       "**= (T_POW_EQUAL)"
+ 
+@@ -961,6 +963,8 @@ expr_without_variable:
+ 			{ $$ = zend_ast_create(ZEND_AST_CONDITIONAL, $1, NULL, $4); }
+ 	|	expr T_COALESCE expr
+ 			{ $$ = zend_ast_create(ZEND_AST_COALESCE, $1, $3); }
++	|	expr T_EXCEPTION_COALESCE expr
++			{ $$ = zend_ast_create(ZEND_AST_EXCEPTION_COALESCE, $1, $3); }
+ 	|	internal_functions_in_yacc { $$ = $1; }
+ 	|	T_INT_CAST expr		{ $$ = zend_ast_create_cast(IS_LONG, $2); }
+ 	|	T_DOUBLE_CAST expr	{ $$ = zend_ast_create_cast(IS_DOUBLE, $2); }
+```
+
+(This was built on top of the `PHP-7.2.4` tag.)
+</details>
+
+- Makes `???` also default on `null` values, like `??`.
+- Has a memory leak because I can't C.
+- Is available here: [passcod/php-src](https://github.com/passcod/php-src), branch `exception-coalesce`
+- Has some tests (which would pass were it not for the leak)
+
+Apart from these issues, it can be used effectively to test this proposal.
 
 ## References
 
