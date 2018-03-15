@@ -238,10 +238,10 @@ index 091d7f61e2..c0a0cece43 100644
 (This was built on top of the `PHP-7.2.4` tag.)
 </details>
 
-- Makes `???` also default on `null` values, like `??`.
-- Has a memory leak because I can't C.
-- Is available here: [passcod/php-src](https://github.com/passcod/php-src), branch `exception-coalesce`
-- Has some tests (which would pass were it not for the leak)
+- Makes `???` also default on `null` values, like `??`;
+- Has a memory leak because I can't C;
+- Is available here: [passcod/php-src](https://github.com/passcod/php-src), branch `exception-coalesce`;
+- Has some tests (which would pass were it not for the leak).
 
 Apart from these issues, it can be used effectively to test this proposal.
 
