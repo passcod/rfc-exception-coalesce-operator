@@ -272,4 +272,4 @@ end
 
 ---
 
-<sub><a name="unofficial">Yes, this is an April Fools' RFC. However, while the <code>???</code> operator choice is not serious, I am quite excited about this Exception Coalesce Operator, whatever actual form it may take! If there is interest from PHP core about it, I'd be happy to go through the proper RFC process for it.</a></sub>
+<sub><a name="unofficial">This is an April Fools' RFC! Besides not going through the correct process for PHP language changes, the `???` operator _syntax_ is ridiculous, although its _semantics_ are interesting.</a></sub>
