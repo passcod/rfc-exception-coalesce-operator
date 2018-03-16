@@ -267,4 +267,6 @@ end
 
 ---
 
-<sub><a name="unofficial">This is an April Fools' RFC! Besides not going through the correct process for PHP language changes, the `???` operator _syntax_ is ridiculous, although its _semantics_ are interesting.</a></sub>
+<sub><a name="unofficial">This is an April Fools' RFC!</a></sub>
+
+<sub>Besides not going through the correct process for PHP language changes, the `???` operator _syntax_ is ridiculous, although its _semantics_ are interesting.</sub>
