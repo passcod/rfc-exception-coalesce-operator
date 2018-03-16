@@ -152,8 +152,7 @@ As this is a language change, a 2/3 majority is required.
 
 ## Patches and Tests
 
-<details>
-    <summary>Here is a hacky (very nasty) partial implementation, built on top of the `PHP-7.2.4` tag:</summary>
+Here is a (very) hacky implementation, built on top of the `PHP-7.2.4` tag:
 
 ```diff
 diff --git a/Zend/zend_ast.c b/Zend/zend_ast.c
@@ -255,8 +254,6 @@ index 091d7f61e2..c0a0cece43 100644
  	|	T_INT_CAST expr		{ $$ = zend_ast_create_cast(IS_LONG, $2); }
  	|	T_DOUBLE_CAST expr	{ $$ = zend_ast_create_cast(IS_DOUBLE, $2); }
 ```
-
-</details>
 
 This implementation is only meant for demonstration and experimentation purposes.
 It is also available at [passcod/php-src](https://github.com/passcod/php-src), branch `exception-coalesce`, where it is accompanied by some tests.
