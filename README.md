@@ -32,8 +32,6 @@ $result = computation() ??? 'alternate';
 
 Extended and formal description TODO.
 
-Alternative forms of the operator TODO.
-
 ### Why not use `@`?
 
 The Error Supressing Operator could be used to approximate the behaviour of the proposed `???` operator:
