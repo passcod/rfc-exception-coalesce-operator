@@ -39,6 +39,23 @@ $result = (@compute()) ?? 'fallback';
 ```
 
 However, the `@` operator is too broad in its effects, as it not only suppresses exceptions, but all errors, and can suppress errors in surprising ways for much wider effects than the user likely intended, e.g. with `@include('file.php');`.
+The construction shown above also absorbs `null` values which might be wanted.
+Consider:
+
+```php
+function save($record) {
+    if (!Database::query("INSERT INTO table VALUES ({$record->id}, {$record->body})")) {
+        throw new DatabaseException('Failed to save: ' . Database::last_error());
+    }
+}
+```
+
+This function would return `null` on success, and throw on error.
+`(@save($record)) ?? fallback()` would therefore execute `fallback()` regardless.
+The proposed operator brings a distinctive feature by not falling through if the value is `null` (as with `??`) or falsy (as with `?:`).
+
+Like `@`, the `???` operator may be considered [a "stfu" operator](https://secure.php.net/manual/en/language.operators.errorcontrol.php#112900), because it does discard the _message_ of exceptions.
+In library code, it should be used with care; in scripting, application, or even quick hacking scenarios, though, it can become a useful and powerful tool through its increased expressiveness.
 
 ### Example: Combined with itself
 
