@@ -30,8 +30,6 @@ try {
 $result = computation() ??? 'alternate';
 ```
 
-Extended and formal description TODO.
-
 ### Why not use `@`?
 
 The Error Supressing Operator could be used to approximate the behaviour of the proposed `???` operator:
@@ -40,9 +38,7 @@ The Error Supressing Operator could be used to approximate the behaviour of the 
 $result = (@compute()) ?? 'fallback';
 ```
 
-However, the `@` operator is too broad in its effects, unclear in some cases, and overloads Null when it is used.
-
-- Too broad: it does not only supress exceptions, but all errors,
+However, the `@` operator is too broad in its effects, as it not only suppresses exceptions, but all errors, and can suppress errors in surprising ways for much wider effects than the user likely intended, e.g. with `@include('file.php');`.
 
 ### Example: Combined with itself
 
