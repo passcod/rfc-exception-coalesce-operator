@@ -280,7 +280,7 @@ result = begin
 end || 'fallback'
 ```
 
-It also supports the Assignment variant mentioned in **Future Work**:
+It also supports the Assignment variant mentioned in **Future Scope**:
 
 ```ruby
 result ||= begin
