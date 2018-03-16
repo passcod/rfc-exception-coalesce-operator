@@ -81,6 +81,38 @@ try {
 }
 ```
 
+### Example: non-existent functions
+
+The operator doesn't only substitute scenarios expressed with try...catch.
+It is sometimes useful to check for existence of a function, and try something else if it doesn't exist:
+
+```php
+$size = getimagesize($filename) ??? user_defined_imagesize($filename);
+
+
+if (function_exists('getimagesize')) {
+    $size = getimagesize ($filename);
+} else {
+    $size = user_defined_imagesize($filename);
+}
+
+// or:
+$size = function_exists('getimagesize') ? getimagesize($filename) : user_defined_imagesize($filename);
+```
+
+The `???` operator can be chained, which is useful to add additional fallbacks:
+
+```php
+$result = foo() ??? bar() ??? baz() ??? 'oh no';
+```
+
+Finally, in the case of dynamic function or method selection, often used in routing mechanisms, the proposal offers some brevity:
+
+```php
+$name = 'dragons';
+echo $name() ??? not_found();
+```
+
 ## Backward Incompatible Changes
 
 None.
