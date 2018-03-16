@@ -32,7 +32,7 @@ $result = computation() ??? 'alternate';
 
 ### Why not use `@`?
 
-The Error Supressing Operator could be used to approximate the behaviour of the proposed `???` operator:
+The Error Suppressing Operator could be used to approximate the behaviour of the proposed `???` operator:
 
 ```php
 $result = (@compute()) ?? 'fallback';
@@ -68,7 +68,7 @@ The operator can be combined with the Null Coalesce and the Short Ternary in the
 $result = compute() ??? $alternate->property ?? $known ?: 'fallback';
 ```
 
-If the succesful result of the left-hand side should be further checked, parentheses can be used to obtain the desired effect.
+If the successful result of the left-hand side should be further checked, parentheses can be used to obtain the desired effect.
 Consider these as equivalent:
 
 ```php
