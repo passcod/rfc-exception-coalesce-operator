@@ -118,13 +118,7 @@ No existing functionality is affected by this, other than the new capabilities o
 
 ## Future Scope
 
-This proposal only covers user-catchable exceptions.
-This is intentional in order to keep the scope reasonable and the semantics consistent.
-However, a future RFC could explore further catching errors.
-
-Additionally, a future proposal could explore an Assignment version of this operator: `$result ???= compute()`.
-
-Furthermore, a unary `???` variant could be envisaged, akin but not equivalent to the Error Supressing Operator `@`.
+Akin to the [Null Coalesce Equal Operator](https://wiki.php.net/rfc/null_coalesce_equal_operator), a future proposal could explore either an Assignment version of this operator: `$result ???= compute();`, or a unary suffix version: `$result = compute()???;`.
 
 ## Proposed Voting Choices
 
@@ -133,7 +127,7 @@ As this is a language change, a 2/3 majority is required.
 ## Patches and Tests
 
 <details>
-    <summary>Here is a hacky (very nasty) partial implementation:</summary>
+    <summary>Here is a hacky (very nasty) partial implementation, built on top of the `PHP-7.2.4` tag:</summary>
 
 ```diff
 diff --git a/Zend/zend_ast.c b/Zend/zend_ast.c
@@ -236,14 +230,15 @@ index 091d7f61e2..c0a0cece43 100644
  	|	T_DOUBLE_CAST expr	{ $$ = zend_ast_create_cast(IS_DOUBLE, $2); }
 ```
 
-(This was built on top of the `PHP-7.2.4` tag.)
 </details>
 
-- Makes `???` also default on `null` values, like `??`;
-- Is available here: [passcod/php-src](https://github.com/passcod/php-src), branch `exception-coalesce`;
-- Has some tests.
+This implementation is only meant for demonstration and experimentation purposes.
+It is also available at [passcod/php-src](https://github.com/passcod/php-src), branch `exception-coalesce`, where it is accompanied by some tests.
+It has one important limitation: as it uses the `??` operator internally, these all evaluate to the RHS, while this proposal would have them evaluate to the LHS:
 
-Apart from this limitation, it can be used effectively to test this proposal.
+- `null ??? "wrong";`
+- `function foo() { return null; } foo() ??? "wrong";`
+- `function foo() {} foo() ??? "wrong";`
 
 ## References
 
