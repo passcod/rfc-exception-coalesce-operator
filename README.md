@@ -205,25 +205,44 @@ index 08a8ab57f4..af512d6beb 100644
  	ZEND_AST_STATIC,
  	ZEND_AST_WHILE,
 diff --git a/Zend/zend_compile.c b/Zend/zend_compile.c
-index 95d93903de..567e3955a1 100644
+index 95d93903de..821b02ff98 100644
 --- a/Zend/zend_compile.c
 +++ b/Zend/zend_compile.c
-@@ -7313,6 +7313,21 @@ void zend_compile_coalesce(znode *result, zend_ast *ast) /* {{{ */
+@@ -7313,6 +7313,41 @@ void zend_compile_coalesce(znode *result, zend_ast *ast) /* {{{ */
  }
  /* }}} */
  
 +void zend_compile_exception_coalesce(znode *result, zend_ast *ast) /* {{{ */
 +{
-+	zend_ast *expr_ast = ast->child[0];
-+	zend_ast *default_ast = ast->child[1];
++	zend_ast *lhs = ast->child[0];
++	zend_ast *rhs = ast->child[1];
 +
-+	zend_ast *hack = zend_ast_create_ex(ZEND_AST_INCLUDE_OR_EVAL, ZEND_EVAL,
-+		zend_ast_create_zval_from_str(
-+			zend_ast_export("try { return ", expr_ast, "; } catch(\\Throwable $e) {}")));
++	/* eval(try { $_exco = (LHS); } catch (\Throwable $e) { $_exco = id; })
++	=> eval without return always returns null... */
++	const char *lhs_prefix = "try { $_exco = (";
++	const char *lhs_suffix = "); } catch (\\Throwable $e) { $_exco = 892638795; }";
 +
-+	ast->child[0] = hack;
-+	zend_ast_destroy(expr_ast);
++	zend_string *lhs_eval_str = zend_ast_export(lhs_prefix, lhs, lhs_suffix);
++	zend_ast *lhs_eval = zend_ast_create_ex(ZEND_AST_INCLUDE_OR_EVAL, ZEND_EVAL,
++		zend_ast_create_zval_from_str(lhs_eval_str));
 +
++	zend_ast_destroy(lhs);
++	// printf("lhs eval: %s\n", ZSTR_VAL(lhs_eval_str));
++
++	/* eval(return ($_exco === id) ? (RHS) : $_exco;)
++	=> ...after a ?? this will always execute AND be the final value! */
++	const char *rhs_prefix = "return ($_exco === 892638795) ? (";
++	const char *rhs_suffix = ") : $_exco;";
++
++	zend_string *rhs_eval_str = zend_ast_export(rhs_prefix, rhs, rhs_suffix);
++	zend_ast *rhs_eval = zend_ast_create_ex(ZEND_AST_INCLUDE_OR_EVAL, ZEND_EVAL,
++		zend_ast_create_zval_from_str(rhs_eval_str));
++
++	zend_ast_destroy(rhs);
++	// printf("rhs eval: %s\n", ZSTR_VAL(rhs_eval_str));
++
++	ast->child[0] = lhs_eval;
++	ast->child[1] = rhs_eval;
 +	zend_compile_coalesce(result, ast);
 +}
 +/* }}} */
@@ -231,7 +250,7 @@ index 95d93903de..567e3955a1 100644
  void zend_compile_print(znode *result, zend_ast *ast) /* {{{ */
  {
  	zend_op *opline;
-@@ -8266,6 +8281,9 @@ void zend_compile_expr(znode *result, zend_ast *ast) /* {{{ */
+@@ -8266,6 +8301,9 @@ void zend_compile_expr(znode *result, zend_ast *ast) /* {{{ */
  		case ZEND_AST_COALESCE:
  			zend_compile_coalesce(result, ast);
  			return;
@@ -241,44 +260,26 @@ index 95d93903de..567e3955a1 100644
  		case ZEND_AST_PRINT:
  			zend_compile_print(result, ast);
  			return;
-diff --git a/Zend/zend_language_parser.y b/Zend/zend_language_parser.y
-index 091d7f61e2..c0a0cece43 100644
---- a/Zend/zend_language_parser.y
-+++ b/Zend/zend_language_parser.y
-@@ -64,6 +64,7 @@ static YYSIZE_T zend_yytnamerr(char*, const char*);
- %left '=' T_PLUS_EQUAL T_MINUS_EQUAL T_MUL_EQUAL T_DIV_EQUAL T_CONCAT_EQUAL T_MOD_EQUAL T_AND_EQUAL T_OR_EQUAL T_XOR_EQUAL T_SL_EQUAL T_SR_EQUAL T_POW_EQUAL
- %left '?' ':'
- %right T_COALESCE
-+%right T_EXCEPTION_COALESCE
- %left T_BOOLEAN_OR
- %left T_BOOLEAN_AND
- %left '|'
-@@ -219,6 +220,7 @@ static YYSIZE_T zend_yytnamerr(char*, const char*);
- %token T_NS_SEPARATOR    "\\ (T_NS_SEPARATOR)"
- %token T_ELLIPSIS        "... (T_ELLIPSIS)"
- %token T_COALESCE        "?? (T_COALESCE)"
-+%token T_EXCEPTION_COALESCE        "??? (T_EXCEPTION_COALESCE)"
- %token T_POW             "** (T_POW)"
- %token T_POW_EQUAL       "**= (T_POW_EQUAL)"
+diff --git a/Zend/zend_language_scanner.l b/Zend/zend_language_scanner.l
+index 837df416e2..7223405fd5 100644
+--- a/Zend/zend_language_scanner.l
++++ b/Zend/zend_language_scanner.l
+@@ -1326,6 +1326,10 @@ NEWLINE ("\r"|"\n"|"\r\n")
+ 	RETURN_TOKEN(T_COALESCE);
+ }
  
-@@ -961,6 +963,8 @@ expr_without_variable:
- 			{ $$ = zend_ast_create(ZEND_AST_CONDITIONAL, $1, NULL, $4); }
- 	|	expr T_COALESCE expr
- 			{ $$ = zend_ast_create(ZEND_AST_COALESCE, $1, $3); }
-+	|	expr T_EXCEPTION_COALESCE expr
-+			{ $$ = zend_ast_create(ZEND_AST_EXCEPTION_COALESCE, $1, $3); }
- 	|	internal_functions_in_yacc { $$ = $1; }
- 	|	T_INT_CAST expr		{ $$ = zend_ast_create_cast(IS_LONG, $2); }
- 	|	T_DOUBLE_CAST expr	{ $$ = zend_ast_create_cast(IS_DOUBLE, $2); }
++<ST_IN_SCRIPTING>"???" {
++	RETURN_TOKEN(T_EXCEPTION_COALESCE);
++}
++
+ <ST_IN_SCRIPTING>"new" {
+ 	RETURN_TOKEN(T_NEW);
+ }
 ```
 
 This implementation is only meant for demonstration and experimentation purposes.
 It is also available at [passcod/php-src](https://github.com/passcod/php-src), branch `exception-coalesce`, where it is accompanied by some tests.
-It has one important limitation: as it uses the `??` operator internally, these all evaluate to the RHS, while this proposal would have them evaluate to the LHS:
-
-- `null ??? "wrong";`
-- `function foo() { return null; } foo() ??? "wrong";`
-- `function foo() {} foo() ??? "wrong";`
+It has two minor limitations because of its internals: the local variable named `$_exco` will be overwritten, and if the LHS evaluates to the magic value `892638795`, the RHS will be erroneously returned.
 
 ## References
 
