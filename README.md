@@ -279,7 +279,11 @@ index 837df416e2..7223405fd5 100644
 
 This implementation is only meant for demonstration and experimentation purposes.
 It is also available at [passcod/php-src](https://github.com/passcod/php-src), branch `exception-coalesce`, where it is accompanied by some tests.
-It has two minor limitations because of its internals: the local variable named `$_exco` will be overwritten, and if the LHS evaluates to the magic value `892638795`, the RHS will be erroneously returned.
+It has some minor limitations because of its internals:
+
+- The local variable named `$_exco` will be overwritten.
+- If the LHS evaluates to the magic value `892638795`, the RHS will be erroneously returned.
+- If the LHS contains an IIFE invoked using `()` (`(function () {})()`) and not `call_user_func`, the pretty printer will generate code that cannot be re-parsed: `function () {}()`, and the construct will throw a Parse Error. There may be other edge cases where that occurs.
 
 ## References
 
