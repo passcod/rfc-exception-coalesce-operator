@@ -1,6 +1,6 @@
 # PHP RFC: Exception Coalesce Operator
 
-- Version: 0.1
+- Version: 1.0
 - Date: 2018-04-01
 - Author: Félix Saparelli <felix@passcod.name>
 - Status: _[Unofficial](#unofficial)_
@@ -72,7 +72,7 @@ try {
     try {
         $result = optionB();
     } catch (Throwable $e) {
-        $result = $fallback }
+        $result = $fallback;
     }
 }
 ```
