@@ -162,7 +162,7 @@ None.
 
 ## Proposed PHP Version
 
-Next major.
+7.x.
 
 ## RFC Impact
 
