@@ -146,6 +146,16 @@ This could be more clearly written:
 if (($data->name['first-name'] && $data->name['last-name']) ??? false)
 ```
 
+It is more visible with even more complex conditions, such as:
+
+```php
+if ((
+    ($data->name['first-name'] && $data->name['last-name'])
+    || $data->name['full-name']
+    || ($store->overrides()['name'] && $options->can->override->name)
+) ??? false)
+```
+
 ## Backward Incompatible Changes
 
 None.
