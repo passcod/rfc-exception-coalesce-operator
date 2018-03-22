@@ -130,6 +130,22 @@ $name = 'dragons';
 echo $name() ??? not_found();
 ```
 
+### Example 4: conditions with deep checking
+
+When checking the validity of input data, it is sometimes necessary to check if several deep properties exist together.
+The `??` operator has greatly helped to make this kind of operation more streamlined, but the `???` operator improves ergonomics further.
+Consider:
+
+```php
+if (($data->name['first-name'] ?? false) && ($data->name['last-name'] ?? false))
+```
+
+This could be more clearly written:
+
+```php
+if (($data->name['first-name'] && $data->name['last-name']) ??? false)
+```
+
 ## Backward Incompatible Changes
 
 None.
