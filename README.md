@@ -57,7 +57,7 @@ The proposed operator brings a distinctive feature by not falling through if the
 Like `@`, the `???` operator may be considered [a "stfu" operator](https://secure.php.net/manual/en/language.operators.errorcontrol.php#112900), because it does discard the _message_ of exceptions.
 In library code, it should be used with care; in scripting, application, or even quick hacking scenarios, though, it can become a useful and powerful tool through its increased expressiveness.
 
-### Example: Combined with itself
+### Example 1: Combined with itself
 
 The operator can be used several times within a single statement, evaluating each subsequent left-hand side as needed.
 This example shows the increasing returns this proposal enables, eliminating large, deeply-nested, hard-to-read structures and enabling more fluent patterns.
@@ -77,7 +77,7 @@ try {
 }
 ```
 
-### Example: Combined with other similar operators
+### Example 2: Combined with other similar operators
 
 The operator can be combined with the Null Coalesce and the Short Ternary in the usual way:
 
@@ -98,7 +98,7 @@ try {
 }
 ```
 
-### Example: non-existent functions
+### Example 3: non-existent functions
 
 The operator doesn't only substitute scenarios expressed with try...catch.
 It is sometimes useful to check for existence of a function, and try something else if it doesn't exist:
