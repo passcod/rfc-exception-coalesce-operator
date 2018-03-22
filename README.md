@@ -1,6 +1,6 @@
 # PHP RFC: Exception Coalesce Operator
 
-- Version: 1.0
+- Version: 0.2
 - Date: 2018-04-01
 - Author: Félix Saparelli <felix@passcod.name>
 - Status: _[Unofficial](#unofficial)_
