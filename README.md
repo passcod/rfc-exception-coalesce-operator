@@ -338,6 +338,6 @@ end
 
 ---
 
-<sub><a name="unofficial">This is an April Fools' RFC!</a></sub>
+<sub><a name="unofficial">This is an April Fools' RFC!</a> Read the little story behind it: https://blog.passcod.name/2018/apr/10/monthly-update#april-fools</sub>
 
 <sub>Besides not going through the correct process for PHP language changes, the `???` operator _syntax_ is ridiculous, although its _semantics_ are interesting.</sub>
