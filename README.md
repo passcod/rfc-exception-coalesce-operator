@@ -1,9 +1,9 @@
 # PHP RFC: Exception Coalesce Operator
 
-- Version: 0.2
+- Version: 0.3
 - Date: 2018-04-01
 - Author: Félix Saparelli <felix@passcod.name>
-- Status: _[Unofficial](#unofficial)_
+- Status: _[Pre-draft](#pre-draft)_
 - First published at: https://github.com/passcod/rfc-exception-coalesce-operator
 
 ## Introduction
@@ -29,6 +29,11 @@ try {
 
 $result = computation() ??? 'alternate';
 ```
+
+### Why `???`
+
+I do not yet have a good proposal for the right syntax.
+I do not believe that `???` is good syntax, as it is confusing, but it is used here as a placeholder until a better one is found.
 
 ### Why not use `@`?
 
@@ -338,6 +343,4 @@ end
 
 ---
 
-<sub><a name="unofficial">This is an April Fools' RFC!</a> Read the little story behind it: https://blog.passcod.name/2018/apr/10/monthly-update#april-fools</sub>
-
-<sub>Besides not going through the correct process for PHP language changes, the `???` operator _syntax_ is ridiculous, although its _semantics_ are interesting.</sub>
+<sub><a name="pre-draft" href="https://blog.passcod.name/2018/apr/10/monthly-update#april-fools">T</a>his proposal has not yet been submitted for consideration to the PHP mailing lists. It was developed here and in this form to tease out its details and uses, and present a better case than the original ridiculous proposal.</sub>
